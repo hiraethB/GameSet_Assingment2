@@ -14,13 +14,15 @@ struct GameSet {
     let order = 12
     let flop = 3
     let award = 10
-    let ratio = 15 // коэффициент пропорциональности призовой игры
+    let ratio: Int = 15 // коэфф. пропорциональности времени игрока
+    //(для 225 баллов/(ratio=15)*2.4 ~ 36 сек,  для ratio = 12 ~ 45 сек)
+    
     //====================
     init() {
         start()
     }
     
-    mutating func start() {
+    private mutating func start() {
         for symbol in CardSet.Triplet.all {
             for number in CardSet.Triplet.all {
                 for color in CardSet.Triplet.all {
