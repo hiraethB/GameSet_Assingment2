@@ -171,6 +171,7 @@ struct GameSet {
     mutating func hintSet() { // подсказка случайного сета
         if hint == true { // Переключение режима игры с "Соло" на "Призовая"
             if match {
+                limit = "█"
                 numberOfHints += award
                 visibleCards.remove(elements: selectedCards)
                 selectedCards.removeAll()
@@ -180,7 +181,6 @@ struct GameSet {
                     }
                     print(hintSets) // Отладка
                 }
-                limit = "█"
                 bound() // установка указателя окончания/начала призовой игры
             } else {
                 selectedCards.removeAll()

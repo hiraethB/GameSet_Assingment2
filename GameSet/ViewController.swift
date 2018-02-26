@@ -6,6 +6,7 @@
 //  Copyright © 2017 GRIAL. All rights reserved.
 //
 import UIKit
+import AVFoundation // M
 
 class ViewController: UIViewController {
     
@@ -22,6 +23,15 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         updateViewFromModel()
+        do
+        {
+            let audioPath = Bundle.main.path(forResource: "1", ofType: ".mp3")
+            try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
+        }
+        catch
+        {
+            //ERROR
+        }
     }
     
     let symbols = [ "▲","◼︎","●"]
@@ -151,17 +161,23 @@ class ViewController: UIViewController {
         iphoneScoreOrHints.text = "\(gameSet.numberOfHints)"
     }
     
-    let countdown = "███▇▇▇▆▆▆▅▅▅▄▄▄▃▃▃▂▂▂▁▁▁ "
+    var audioPlayer = AVAudioPlayer() // M
+    let countdown = "███▇▇▇▆▆▆▅▅▅▄▄▄▃▃▃▂▂▂▁▁▁▁ "
     
     private func counterIntervals() { // количество интервалов
         let index = countdown.index(countdown.startIndex, offsetBy: numberIntervals)
-        numberIntervals += 1
+        if gameSet.iphoneVsPlayer != "🏁", gameSet.iphoneVsPlayer != "🤺" {
         allSetsOrTimer.text = String(countdown[index])
+        } else {
+            allSetsOrTimer.text = gameSet.iphoneVsPlayer
+        }
+        numberIntervals += 1
+        audioPlayer.play() // M
         if numberIntervals == countdown.count-1 {
             timer.invalidate()
+            audioPlayer.stop() // M
             gameSet.hintSet()
             updateViewFromModel()
-            iphoneScoreOrHints.text = "\(gameSet.numberOfHints)"
             numberIntervals = 0
             if gameSet.iphoneVsPlayer != "🏁" {
                 iphoneOrDango.isEnabled = true // отмена блокировки кнопки 📲
