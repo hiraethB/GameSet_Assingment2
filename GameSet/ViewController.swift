@@ -6,7 +6,7 @@
 //  Copyright © 2017 GRIAL. All rights reserved.
 //
 import UIKit
-import AVFoundation // M
+import AVFoundation
 
 class ViewController: UIViewController {
     
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
             //ERROR
         }
     }
-    
+
     let symbols = [ "▲","◼︎","●"]
     let colors = [ #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1), #colorLiteral(red: 0.5791940689, green: 0.1280144453, blue: 0.5726861358, alpha: 1), #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1) ]
     let alphas:[CGFloat] = [1, 1, 0.3]
@@ -45,18 +45,14 @@ class ViewController: UIViewController {
             let button = cardButtons[index]
             if index < gameSet.visibleCards.count {
                 let card = gameSet.visibleCards[index]
-                let symbol = symbols[card.symbol.rawValue]
-                var numberSymbols = symbol
-                for _ in 0..<card.number.rawValue {
-                    numberSymbols += symbol
-                }
+                let symbol = String(repeating: symbols[card.symbol.rawValue], count: card.number.rawValue+1)
                 button.layer.cornerRadius = 8.0
                 button.backgroundColor = .white
                 let attributes: [NSAttributedStringKey : Any] = [
                     .foregroundColor : colors[card.color.rawValue].withAlphaComponent(alphas[card.fill.rawValue]),
                     .strokeWidth : strokeWidths[card.fill.rawValue]
                 ]
-                button.setAttributedTitle( NSAttributedString (string: numberSymbols, attributes: attributes), for: .normal)
+                button.setAttributedTitle( NSAttributedString (string: symbol, attributes: attributes), for: .normal)
                 button.isEnabled = true
                 if !gameSet.selectedCards.contains(card) {
                     button.layer.borderColor = UIColor.clear.cgColor
@@ -98,23 +94,12 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var currentDeck: UIButton!
     @IBAction func more3cards() {
-        if !gameSet.cards.isEmpty {
-            
-            if gameSet.visibleCards.count < cardButtons.count {
-                guard !gameSet.match else {
-                    // выбран сет
-                    gameSet.addFlopNowSet()
-                    updateViewFromModel()
-                    return
-                }
-                gameSet.addCards(few: gameSet.flop)
-                updateViewFromModel()
-            }
-            if gameSet.visibleCards.count == cardButtons.count, gameSet.match {
-                gameSet.addFlopNowSet()
-                updateViewFromModel()
-            }
+        if !gameSet.match, gameSet.visibleCards.count < cardButtons.count { //  не выбран сет
+            gameSet.addCards(few: gameSet.flop)
+        } else {
+            gameSet.addFlopNowSet()
         }
+        updateViewFromModel()
     }
     
     @IBAction func newGame() {
@@ -132,7 +117,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var allSetsOrTimer: UILabel!
     @IBOutlet weak var iphoneOrDango: UIButton!
     
-    lazy var delay = gameSet.iphonePlayStart() // задатчик интервала в сек
+    lazy private var delay = gameSet.iphonePlayStart() // задатчик интервала в сек
     private var numberIntervals = 0
     private var timer = Timer()
     @IBAction func iphoneOrHanami() {
@@ -143,14 +128,14 @@ class ViewController: UIViewController {
             }
             if !gameSet.match {
                 // включение таймера, когда сет не выбран
-                timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(delay), repeats: true) {[weak self] time in
-                    self?.counterIntervals()
+                timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(delay), repeats: true) {
+                    [weak self] time in self?.counterIntervals()
                 }
             } else {
                 gameSet.hintSet()
                 // включение таймера после удаления сета
-                timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(delay), repeats: true) {[weak self] time in
-                    self?.counterIntervals()
+                timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(delay), repeats: true) {
+                    [weak self] time in self?.counterIntervals()
                 }
             }
         }
@@ -161,23 +146,23 @@ class ViewController: UIViewController {
         iphoneScoreOrHints.text = "\(gameSet.numberOfHints)"
     }
     
-    var audioPlayer = AVAudioPlayer() // M
+    var audioPlayer = AVAudioPlayer()
     let countdown = "███▇▇▇▆▆▆▅▅▅▄▄▄▃▃▃▂▂▂▁▁▁▁ "
     
     private func counterIntervals() { // количество интервалов
         let index = countdown.index(countdown.startIndex, offsetBy: numberIntervals)
         if gameSet.iphoneVsPlayer != "🏁", gameSet.iphoneVsPlayer != "🤺" {
-        allSetsOrTimer.text = String(countdown[index])
+            allSetsOrTimer.text = String(countdown[index])
         } else {
             allSetsOrTimer.text = gameSet.iphoneVsPlayer
         }
         numberIntervals += 1
-        audioPlayer.play() // M
+        audioPlayer.play()
         if numberIntervals == countdown.count-1 {
             timer.invalidate()
-            audioPlayer.stop() // M
             gameSet.hintSet()
             updateViewFromModel()
+            audioPlayer.stop()
             numberIntervals = 0
             if gameSet.iphoneVsPlayer != "🏁" {
                 iphoneOrDango.isEnabled = true // отмена блокировки кнопки 📲
