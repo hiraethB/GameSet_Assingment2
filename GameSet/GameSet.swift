@@ -14,9 +14,9 @@ struct GameSet {
     let order = 12
     let flop = 3
     let award = 10
-    let ratio: Int = 15 // коэфф. пропорциональности времени игрока
-    //(для 216 баллов/(ratio=15)*2.5 ~ 36 сек, ratio(12)~45 сек, ratio(20)~30 сек
-    
+    let ratio: Int = 36 // коэфф. пропорциональности времени игрока
+    /* (для 200 баллов ratio(48) время игрока ~20 сек,
+     (для 200 баллов ratio(36) время игрока ~30 сек */
     //====================
     init() {
         start()
@@ -47,10 +47,10 @@ struct GameSet {
         return CardSet.checkSet(cards: selectedCards)
     }
     
-    private(set) var max = 0
+    private var max = 0
     
     mutating func chooseCard(at index: Int) {
-        guard iphoneVsPlayer != "👀" else { return }
+        guard limit == " " else { return }
         let card = visibleCards[index]
         if !selectedCards.contains(card) {
             if selectedCards.count == flop {
@@ -65,7 +65,7 @@ struct GameSet {
             }
             selectedCards += [card]
             // автоматическое удаление сета при произовой игре
-            if match, hint == true {
+            if hint == true, match {
                 addFlopNowSet()
             }
         } else {
@@ -83,11 +83,15 @@ struct GameSet {
             max += award
             visibleCards.remove(elements: selectedCards)
             selectedCards.removeAll()
-            bound()
+            boundPrize()
             if !cards.isEmpty, visibleCards.count < order {
                 addCards(few: flop)
             }
         }
+    }
+    
+    var scoreOfPlayer: String {
+        return (prize + "\(max)")
     }
     
     mutating func addCards( few: Int) {
@@ -129,6 +133,35 @@ struct GameSet {
         }
         return hints
     }
+    //--------------призовая игра---------------------
+    private mutating func iphoneSeachSet () { // Выбор сета "для iPhone"
+        guard hintSets.count == 0  else { seachSet(); return }
+        // Если не обнаружен сет, то добавить карт
+        while hintSets.count == 0 && !cards.isEmpty {
+            for _ in 1...flop {
+                visibleCards.append(draw())
+            }
+            print(hintSets) // Отладка
+        }
+        seachSet ()
+    }
+    // указатель повторения или окончания призовой игры
+    private mutating func boundPrize() {
+        if cards.isEmpty, hintSets.count == 0 {
+            if max < numberOfHints { // победа iPhone
+                limit = "🏁"
+                prize = " "
+            } else {
+                limit = "🤺"
+            }
+        }
+    }
+    
+    var iphoneVsPlayer : String {
+        guard hint != false else {return "(\(hintSets.count))"} // флаг подсказки "соло"
+        guard hint == true || !playWith else { return ""} // отсутствие подсказки
+        return limit //"🤺"  ожидание призовой игры
+    }
     
     var playWith: Bool { // флаг призовой игры
         guard cards.isEmpty, hintSets.count == 0 || visibleCards.count < 6,
@@ -138,18 +171,21 @@ struct GameSet {
         return true
     }
     
-    var scoreOfPlayer: String {
-        return "\(max)" + prize
-    }
-    //--------------призовая игра-------------------------
+    private var limit = " "
+    private var prize = " "
+    
     mutating func iphonePlayStart() -> Double {
         selectedCards.removeAll()
-        if visibleCards.count < 6, max == 260 {
-            prize = " 🎖"
+        if max == 260 {
             max = 2*max
-        } else { prize = " 🏆"}
-        if max == 230 || max == 240 || max == 250 {
-            max += max/5
+            prize = "🎖"
+        } else {
+            if max > 229 {
+                max += max/5
+                prize = "🏅"
+            } else {
+                prize = "🏆"
+            }
         }
         visibleCards.removeAll()
         cards.removeAll()
@@ -158,12 +194,9 @@ struct GameSet {
         max = 0
         numberOfHints = 0
         hint = true
-        limit = "█"
+        limit = " "
         return timePrize
     }
-    
-    private var limit = ""
-    private var prize = " "
     
     private(set) var hint: Bool? //флаг использования подсказки или призовой игры
     private(set) var numberOfHints = 0
@@ -171,7 +204,7 @@ struct GameSet {
     mutating func hintSet() { // подсказка случайного сета
         if hint == true { // Переключение режима игры с "Соло" на "Призовая"
             if match {
-                limit = "█"
+                limit = " "
                 numberOfHints += award
                 visibleCards.remove(elements: selectedCards)
                 selectedCards.removeAll()
@@ -181,16 +214,16 @@ struct GameSet {
                     }
                     print(hintSets) // Отладка
                 }
-                bound() // установка указателя окончания/начала призовой игры
+                boundPrize() // установка указателя окончания/начала призовой игры
             } else {
                 selectedCards.removeAll()
                 iphoneSeachSet()
-                bound()
+                boundPrize()
                 if limit != "🤺" , limit != "🏁" {
                     limit = "👀"
                 }
             }
-            //---------------------------------
+            //------------------------------------------------
         } else {
             // ============ игра "Соло" ==============================
             hint = false // флаг подсказки при игре "соло"
@@ -214,36 +247,6 @@ struct GameSet {
                 selectedCards.append(visibleCards[hintSets[randomIndex][index]])
             }
         }
-    }
-    
-    private mutating func iphoneSeachSet () { // Выбор сета "для iPhone"
-        guard hintSets.count == 0  else { seachSet(); return }
-        // Если не обнаружен сет, то добавить карт
-        while hintSets.count == 0 && !cards.isEmpty {
-            for _ in 1...flop {
-                visibleCards.append(draw())
-            }
-            print(hintSets) // Отладка
-        }
-        seachSet ()
-    }
-    
-    private mutating func bound() { // указатель повторения или окончания призовой игры
-        if cards.isEmpty, hintSets.count == 0, hint == true {
-            if max < numberOfHints { // победа iPhone
-                limit = "🏁"
-                prize = " "
-            } else {
-                limit = "🤺"
-            }
-        }
-    }
-    
-    var iphoneVsPlayer : String {
-        guard hint != true else { return limit } // если hint=true призовая игра
-        guard hint != false else { return "(\(hintSets.count))"} // флаг подсказки "соло"
-        guard playWith  else { return  " " } // отсутствие подсказки или
-        return "🤺" // ожидание призовой игры
     }
 }
 

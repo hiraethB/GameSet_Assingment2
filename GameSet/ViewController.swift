@@ -20,6 +20,8 @@ class ViewController: UIViewController {
         }
     }
     
+    private var audioPlayer = AVAudioPlayer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         updateViewFromModel()
@@ -33,7 +35,7 @@ class ViewController: UIViewController {
             //ERROR
         }
     }
-
+    
     let symbols = [ "▲","◼︎","●"]
     let colors = [ #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1), #colorLiteral(red: 0.5791940689, green: 0.1280144453, blue: 0.5726861358, alpha: 1), #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1) ]
     let alphas:[CGFloat] = [1, 1, 0.3]
@@ -77,12 +79,13 @@ class ViewController: UIViewController {
             }
         }
         score.text =  gameSet.scoreOfPlayer
-        if gameSet.cards.isEmpty || gameSet.visibleCards.count == cardButtons.count && !gameSet.match || gameSet.iphoneVsPlayer == "👀" {
+        if gameSet.cards.isEmpty || gameSet.visibleCards.count == cardButtons.count && !gameSet.match ||
+            gameSet.iphoneVsPlayer == "👀" {
             currentDeck.isEnabled = false // блокировка кнопки more3cards
         } else {
             currentDeck.isEnabled = true // отмена блокировки кнопки more3cards
         }
-        if numberIntervals == countdown.count-1 || gameSet.hint != true {
+        if iphoneOrDango.isEnabled {
             allSetsOrTimer.text = gameSet.iphoneVsPlayer
         }
         if gameSet.playWith { // призовая игра с iPhone
@@ -106,20 +109,21 @@ class ViewController: UIViewController {
         gameSet = GameSet()
         iphoneOrDango.setTitle("🍡", for: .normal)
         iphoneScoreOrHints.text = ""
-        currentDeck.isEnabled = true // разблокировать кнопку +3
         iphoneOrDango.isEnabled = true
         updateViewFromModel()
         timer.invalidate()
+        audioPlayer.stop()
         numberIntervals = 0
     }
-    
-    @IBOutlet weak var iphoneScoreOrHints: UILabel!
+    //++++++++++++++++++++++Extra Credit+++++++++++++++++++++++++++++
     @IBOutlet weak var allSetsOrTimer: UILabel!
     @IBOutlet weak var iphoneOrDango: UIButton!
+    @IBOutlet weak var iphoneScoreOrHints: UILabel!
     
     lazy private var delay = gameSet.iphonePlayStart() // задатчик интервала в сек
     private var numberIntervals = 0
     private var timer = Timer()
+    
     @IBAction func iphoneOrHanami() {
         if gameSet.playWith || gameSet.hint == true { // режим призовой игры
             iphoneOrDango.isEnabled = false
@@ -146,8 +150,7 @@ class ViewController: UIViewController {
         iphoneScoreOrHints.text = "\(gameSet.numberOfHints)"
     }
     
-    var audioPlayer = AVAudioPlayer()
-    let countdown = "███▇▇▇▆▆▆▅▅▅▄▄▄▃▃▃▂▂▂▁▁▁▁ "
+    let countdown = "██████▇▇▇▇▇▇▆▆▆▆▆▆▅▅▅▅▅▅▄▄▄▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁ "
     
     private func counterIntervals() { // количество интервалов
         let index = countdown.index(countdown.startIndex, offsetBy: numberIntervals)
@@ -161,12 +164,12 @@ class ViewController: UIViewController {
         if numberIntervals == countdown.count-1 {
             timer.invalidate()
             gameSet.hintSet()
-            updateViewFromModel()
-            audioPlayer.stop()
-            numberIntervals = 0
             if gameSet.iphoneVsPlayer != "🏁" {
                 iphoneOrDango.isEnabled = true // отмена блокировки кнопки 📲
             }
+            updateViewFromModel()
+            audioPlayer.stop()
+            numberIntervals = 0
         }
     }
 }
