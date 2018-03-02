@@ -64,7 +64,7 @@ struct GameSet {
                 selectedCards.removeAll()
             }
             selectedCards += [card]
-            // автоматическое удаление сета при произовой игре
+            // автоматическое удаление сета при призовой игре
             if hint == true, match {
                 addFlopNowSet()
             }
@@ -158,9 +158,10 @@ struct GameSet {
     }
     
     var iphoneVsPlayer : String {
+        guard hint == true else { return limit } // призовая игра
         guard hint != false else {return "(\(hintSets.count))"} // флаг подсказки "соло"
-        guard hint == true || !playWith else { return ""} // отсутствие подсказки
-        return limit //"🤺"  ожидание призовой игры
+        guard playWith else { return " "}  // отсутствие подсказки
+        return "🤺"  //  ожидание призовой игры
     }
     
     var playWith: Bool { // флаг призовой игры
