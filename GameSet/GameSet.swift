@@ -158,7 +158,7 @@ struct GameSet {
     }
     
     var iphoneVsPlayer : String {
-        guard hint == true else { return limit } // призовая игра
+        guard hint != true else { return limit } // призовая игра
         guard hint != false else {return "(\(hintSets.count))"} // флаг подсказки "соло"
         guard playWith else { return " "}  // отсутствие подсказки
         return "🤺"  //  ожидание призовой игры
