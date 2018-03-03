@@ -36,7 +36,7 @@ class ViewController: UIViewController {
         updateViewFromModel()
         do
         {
-            let audioPath = Bundle.main.path(forResource: nil, ofType: ".mp3")
+            let audioPath = Bundle.main.path(forResource: "1", ofType: ".mp3")
             try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
         }
         catch
@@ -165,6 +165,7 @@ class ViewController: UIViewController {
             allSetsOrTimer.text = String(countdown[index])
         } else {
             allSetsOrTimer.text = gameSet.iphoneVsPlayer
+            numberIntervals = countdown.count-2
         }
         numberIntervals += 1
         audioPlayer.play()
