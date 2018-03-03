@@ -14,8 +14,7 @@
 		D91798801FD319B2006BEC0B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D917987E1FD319B2006BEC0B /* LaunchScreen.storyboard */; };
 		D91798891FD32C94006BEC0B /* CardSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91798881FD32C94006BEC0B /* CardSet.swift */; };
 		D917988B1FD33BB7006BEC0B /* GameSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D917988A1FD33BB7006BEC0B /* GameSet.swift */; };
-		D95171852048B3EC00C12CFE /* 1.mp3 in Sources */ = {isa = PBXBuildFile; fileRef = D98915772045D6D000B857CA /* 1.mp3 */; };
-		D98915782045D6D000B857CA /* 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D98915772045D6D000B857CA /* 1.mp3 */; };
+		D9EB8155204B2A0D00561681 /* 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D98915772045D6D000B857CA /* 1.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,7 +27,7 @@
 		D91798811FD319B2006BEC0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D91798881FD32C94006BEC0B /* CardSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSet.swift; sourceTree = "<group>"; };
 		D917988A1FD33BB7006BEC0B /* GameSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSet.swift; sourceTree = "<group>"; };
-		D98915772045D6D000B857CA /* 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = 1.mp3; path = ../../../../Music/1.mp3; sourceTree = "<group>"; };
+		D98915772045D6D000B857CA /* 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = 1.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,7 +140,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D98915782045D6D000B857CA /* 1.mp3 in Resources */,
+				D9EB8155204B2A0D00561681 /* 1.mp3 in Resources */,
 				D91798801FD319B2006BEC0B /* LaunchScreen.storyboard in Resources */,
 				D917987D1FD319B2006BEC0B /* Assets.xcassets in Resources */,
 				D917987B1FD319B2006BEC0B /* Main.storyboard in Resources */,
@@ -155,7 +154,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D95171852048B3EC00C12CFE /* 1.mp3 in Sources */,
 				D91798781FD319B2006BEC0B /* ViewController.swift in Sources */,
 				D91798891FD32C94006BEC0B /* CardSet.swift in Sources */,
 				D917988B1FD33BB7006BEC0B /* GameSet.swift in Sources */,
