@@ -12,7 +12,16 @@ class ViewController: UIViewController {
     
     var gameSet = GameSet()
     
-    @IBOutlet var cardButtons: [UIButton]!
+    @IBOutlet var cardButtons: [UIButton]! {
+        didSet {
+            for index in cardButtons.indices {
+                let button = cardButtons[index]
+                button.layer.cornerRadius = 8.0
+                button.layer.borderWidth = 5.0
+            }
+        }
+    }
+    
     @IBAction func touchCard(_ sender: UIButton) {
         if let buttonIndex = cardButtons.index(of: sender) {
             gameSet.chooseCard(at: buttonIndex)
@@ -27,7 +36,7 @@ class ViewController: UIViewController {
         updateViewFromModel()
         do
         {
-            let audioPath = Bundle.main.path(forResource: "1", ofType: ".mp3")
+            let audioPath = Bundle.main.path(forResource: nil, ofType: ".mp3")
             try audioPlayer = AVAudioPlayer(contentsOf: URL(fileURLWithPath: audioPath!))
         }
         catch
@@ -48,7 +57,6 @@ class ViewController: UIViewController {
             if index < gameSet.visibleCards.count {
                 let card = gameSet.visibleCards[index]
                 let symbol = String(repeating: symbols[card.symbol.rawValue], count: card.number.rawValue+1)
-                button.layer.cornerRadius = 8.0
                 button.backgroundColor = .white
                 let attributes: [NSAttributedStringKey : Any] = [
                     .foregroundColor : colors[card.color.rawValue].withAlphaComponent(alphas[card.fill.rawValue]),
@@ -59,7 +67,6 @@ class ViewController: UIViewController {
                 if !gameSet.selectedCards.contains(card) {
                     button.layer.borderColor = UIColor.clear.cgColor
                 } else {
-                    button.layer.borderWidth = 5.0
                     if gameSet.selectedCards.count == gameSet.flop {
                         button.isEnabled = false
                         if gameSet.match {
