@@ -19,10 +19,10 @@ struct GameSet {
      (для 200 баллов ratio(36) время игрока ~30 сек */
     //====================
     init() {
-        start()
+        startDeck()
     }
     
-    private mutating func start() {
+    private mutating func startDeck() {
         for symbol in CardSet.Triplet.all {
             for number in CardSet.Triplet.all {
                 for color in CardSet.Triplet.all {
@@ -91,7 +91,7 @@ struct GameSet {
     }
     
     var scoreOfPlayer: String {
-        return (prize + "\(max)")
+        return prize + "\(max)"
     }
     
     mutating func addCards( few: Int) {
@@ -134,17 +134,8 @@ struct GameSet {
         return hints
     }
     //--------------призовая игра---------------------
-    private mutating func iphoneSeachSet () { // Выбор сета "для iPhone"
-        guard hintSets.count == 0  else { seachSet(); return }
-        // Если не обнаружен сет, то добавить карт
-        while hintSets.count == 0 && !cards.isEmpty {
-            for _ in 1...flop {
-                visibleCards.append(draw())
-            }
-            print(hintSets) // Отладка
-        }
-        seachSet ()
-    }
+    private var limit = " "
+    private var prize = " "
     // указатель повторения или окончания призовой игры
     private mutating func boundPrize() {
         if cards.isEmpty, hintSets.count == 0 {
@@ -171,10 +162,7 @@ struct GameSet {
             else { return false }
         return true
     }
-    
-    private var limit = " "
-    private var prize = " "
-    
+ 
     mutating func iphonePlayStart() -> Double {
         selectedCards.removeAll()
         if max == 260 {
@@ -191,7 +179,7 @@ struct GameSet {
         visibleCards.removeAll()
         cards.removeAll()
         let timePrize = Double(10*max/ratio)/100
-        start()
+        startDeck()
         max = 0
         numberOfHints = 0
         hint = true
@@ -217,8 +205,16 @@ struct GameSet {
                 }
                 boundPrize() // установка указателя окончания/начала призовой игры
             } else {
-                selectedCards.removeAll()
-                iphoneSeachSet()
+                if hintSets.count == 0 {
+                    // Если не обнаружен сет, то добавить карт
+                    while hintSets.count == 0 && !cards.isEmpty {
+                        for _ in 1...flop {
+                            visibleCards.append(draw())
+                        }
+                        print(hintSets) // Отладка
+                    }
+                }
+                seachSet ()
                 boundPrize()
                 if limit != "🤺" , limit != "🏁" {
                     limit = "👀"

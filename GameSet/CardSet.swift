@@ -23,14 +23,14 @@ struct CardSet: Equatable {
         static var all = [Triplet.one, .two, .three]
     }
 
-    static func checkSet(cards: [CardSet]) -> Bool {
+    static func checkSet(cards: [CardSet]) -> Bool { //сложение матриц по модулю 3
         let  sumMatrix = [
             cards.reduce(0, { $0 + $1.symbol.rawValue}),
             cards.reduce(0, { $0 + $1.number.rawValue}),
             cards.reduce(0, { $0 + $1.color.rawValue}),
             cards.reduce(0, { $0 + $1.fill.rawValue})
             ]
-        return sumMatrix.reduce(true, { $0 && ($1 % 3 == 0)})
+        return sumMatrix.reduce(true, { $0 && $1 % 3 == 0})
     }
 }
 

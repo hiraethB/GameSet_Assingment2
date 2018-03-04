@@ -104,7 +104,7 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var currentDeck: UIButton!
     @IBAction func more3cards() {
-        if !gameSet.match, gameSet.visibleCards.count < cardButtons.count { //  не выбран сет
+        if !gameSet.match { //  не выбран сет
             gameSet.addCards(few: gameSet.flop)
         } else {
             gameSet.addFlopNowSet()
@@ -159,7 +159,7 @@ class ViewController: UIViewController {
     
     let countdown = "██████▇▇▇▇▇▇▆▆▆▆▆▆▅▅▅▅▅▅▄▄▄▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁ "
     
-    private func counterIntervals() { // количество интервалов
+    private func counterIntervals() { // счётчик интервалов
         let index = countdown.index(countdown.startIndex, offsetBy: numberIntervals)
         if gameSet.iphoneVsPlayer != "🏁", gameSet.iphoneVsPlayer != "🤺" {
             allSetsOrTimer.text = String(countdown[index])
