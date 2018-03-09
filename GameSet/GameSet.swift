@@ -11,12 +11,9 @@ struct GameSet {
     
     private(set) var cards = [CardSet]()
     //========Const=======
-    let order = 12
+    private let order = 12
     let flop = 3
-    let award = 10
-    let ratio: Int = 36 // коэфф. пропорциональности времени игрока
-    /* (для 200 баллов ratio(48) время игрока ~20 сек,
-     (для 200 баллов ratio(36) время игрока ~30 сек */
+    private let award = 10
     //====================
     init() {
         startDeck()
@@ -58,7 +55,7 @@ struct GameSet {
                     addFlopNowSet()
                 } else {
                     if hintSets.count != 0 {
-                        max -= penalty + 3 // -3, -12 , -21, -30, -39
+                        max -= penalty + 3 // -3,-12,-21,-30,-39
                     }
                 }
                 selectedCards.removeAll()
@@ -79,15 +76,13 @@ struct GameSet {
     }
     
     mutating func addFlopNowSet() {
-        if match {
-            max += award
-            visibleCards.remove(elements: selectedCards)
-            selectedCards.removeAll()
-            boundPrize()
-            if !cards.isEmpty, visibleCards.count < order {
-                addCards(few: flop)
-            }
+        max += award
+        visibleCards.remove(elements: selectedCards)
+        selectedCards.removeAll()
+        if !cards.isEmpty, visibleCards.count < order {
+            addCards(few: flop)
         }
+        boundPrize()
     }
     
     var scoreOfPlayer: String {
@@ -108,7 +103,7 @@ struct GameSet {
             }
         }
         if hintsCount != 0 {
-            max -= penalty  // -9, -18, -27, -36
+            max -= penalty  // -9,-18,-27,-36
         }
         print(hintSets)
     }
@@ -116,17 +111,15 @@ struct GameSet {
     private mutating func draw() -> CardSet {
         return cards.remove(at: cards.count.arc4random)
     }
-    //++++++++++++++++++++++Extra Credit+++++++++++++++++++++++++++++
+    //++++++++++++++++++++++Extra Credit++++++++++++++++++++++++++
     var hintSets: [[Int]] {
         var hints = [[Int]]()
-        if visibleCards.count != 0 {
-            for i in 0..<visibleCards.count {
-                for j in (i+1)..<visibleCards.count {
-                    for k in (j+1)..<visibleCards.count {
-                        let cards = [visibleCards[i], visibleCards[j], visibleCards[k]]
-                        if CardSet.checkSet(cards: cards) {
-                            hints.append([i,j,k])
-                        }
+        for i in 0..<visibleCards.count {
+            for j in (i+1)..<visibleCards.count {
+                for k in (j+1)..<visibleCards.count {
+                    let cards = [visibleCards[i], visibleCards[j], visibleCards[k]]
+                    if CardSet.checkSet(cards: cards) {
+                        hints.append([i,j,k])
                     }
                 }
             }
@@ -136,9 +129,9 @@ struct GameSet {
     //--------------призовая игра---------------------
     private var limit = " "
     private var prize = " "
-    // указатель повторения или окончания призовой игры
-    private mutating func boundPrize() {
-        if cards.isEmpty, hintSets.count == 0 {
+    
+    private mutating func boundPrize() { // повторение/окончание призовой игры
+        if playWith {
             if max < numberOfHints { // победа iPhone
                 limit = "🏁"
                 prize = " "
@@ -149,20 +142,19 @@ struct GameSet {
     }
     
     var iphoneVsPlayer : String {
-        guard hint != true else { return limit } // призовая игра
+        guard hint != true, !playWith else { return limit } // призовая игра
         guard hint != false else {return "(\(hintSets.count))"} // флаг подсказки "соло"
-        guard playWith else { return " "}  // отсутствие подсказки
-        return "🤺"  //  ожидание призовой игры
+        return " "
     }
     
     var playWith: Bool { // флаг призовой игры
         guard cards.isEmpty, hintSets.count == 0 || visibleCards.count < 6,
             hint == nil &&  max > 179 || // при "сольной" игре
-                hint == true && max >= numberOfHints // при призовой игре
+                hint == true && max >= numberOfHints // при призовой игр
             else { return false }
         return true
     }
- 
+    
     mutating func iphonePlayStart() -> Double {
         selectedCards.removeAll()
         if max == 260 {
@@ -178,7 +170,7 @@ struct GameSet {
         }
         visibleCards.removeAll()
         cards.removeAll()
-        let timePrize = Double(10*max/ratio)/100
+        let timePrize = Double(max)/1000
         startDeck()
         max = 0
         numberOfHints = 0
@@ -203,7 +195,7 @@ struct GameSet {
                     }
                     print(hintSets) // Отладка
                 }
-                boundPrize() // установка указателя окончания/начала призовой игры
+                boundPrize() // окончание/начало призовой игры
             } else {
                 if hintSets.count == 0 {
                     // Если не обнаружен сет, то добавить карт
@@ -216,13 +208,13 @@ struct GameSet {
                 }
                 seachSet ()
                 boundPrize()
-                if limit != "🤺" , limit != "🏁" {
+                if !playWith {
                     limit = "👀"
                 }
             }
             //------------------------------------------------
         } else {
-            // ============ игра "Соло" ==============================
+            // ============ игра "Соло" =========================
             hint = false // флаг подсказки при игре "соло"
             guard hintSets.count != 0 else { return}
             guard !match  else { return }

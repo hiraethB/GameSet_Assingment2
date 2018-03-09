@@ -10,7 +10,7 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
-    var gameSet = GameSet()
+    private var gameSet = GameSet()
     
     @IBOutlet var cardButtons: [UIButton]! {
         didSet {
@@ -45,10 +45,12 @@ class ViewController: UIViewController {
         }
     }
     
-    let symbols = [ "▲","◼︎","●"]
-    let colors = [ #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1), #colorLiteral(red: 0.5791940689, green: 0.1280144453, blue: 0.5726861358, alpha: 1), #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1) ]
-    let alphas:[CGFloat] = [1, 1, 0.3]
-    let strokeWidths:[CGFloat] = [10,0,-10]
+    @IBOutlet weak var score: UILabel!
+    
+    private let symbols = [ "▲","◼︎","●"]
+    private let colors = [ #colorLiteral(red: 1, green: 0.1491314173, blue: 0, alpha: 1), #colorLiteral(red: 0.5791940689, green: 0.1280144453, blue: 0.5726861358, alpha: 1), #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1) ]
+    private let alphas:[CGFloat] = [1, 1, 0.3]
+    private let strokeWidths:[CGFloat] = [10,0,-10]
     
     private func updateViewFromModel() {
         currentDeck.setTitle("\(gameSet.cards.count)" + "➙3", for: .normal)
@@ -99,8 +101,6 @@ class ViewController: UIViewController {
             iphoneOrDango.setTitle("📲", for: .normal)
         }
     }
-    
-    @IBOutlet weak var score: UILabel!
     
     @IBOutlet weak var currentDeck: UIButton!
     @IBAction func more3cards() {
@@ -157,19 +157,24 @@ class ViewController: UIViewController {
         iphoneScoreOrHints.text = "\(gameSet.numberOfHints)"
     }
     
-    let countdown = "██████▇▇▇▇▇▇▆▆▆▆▆▆▅▅▅▅▅▅▄▄▄▄▄▄▃▃▃▃▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁ "
+    private var timeIndicator = 0
+    private let lengthInterval = 16 // длительность интервала (в delay)
+    private let countdown = "█▇▆▅▄▃▂▁"
     
     private func counterIntervals() { // счётчик интервалов
-        let index = countdown.index(countdown.startIndex, offsetBy: numberIntervals)
-        if gameSet.iphoneVsPlayer != "🏁", gameSet.iphoneVsPlayer != "🤺" {
+        let index = countdown.index(countdown.startIndex, offsetBy: timeIndicator)
+        if !gameSet.playWith {
+            numberIntervals += 1
+            if numberIntervals%lengthInterval == 0 {
+                timeIndicator += 1
+            }
             allSetsOrTimer.text = String(countdown[index])
+            audioPlayer.play()
         } else {
             allSetsOrTimer.text = gameSet.iphoneVsPlayer
-            numberIntervals = countdown.count-2
+            numberIntervals = countdown.count*lengthInterval
         }
-        numberIntervals += 1
-        audioPlayer.play()
-        if numberIntervals == countdown.count-1 {
+        if numberIntervals == countdown.count*lengthInterval {
             timer.invalidate()
             gameSet.hintSet()
             if gameSet.iphoneVsPlayer != "🏁" {
@@ -178,6 +183,7 @@ class ViewController: UIViewController {
             updateViewFromModel()
             audioPlayer.stop()
             numberIntervals = 0
+            timeIndicator = 0
         }
     }
 }
